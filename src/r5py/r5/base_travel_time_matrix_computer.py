@@ -69,7 +69,8 @@ class BaseTravelTimeMatrixComputer:
             ``departure``, ``departure_time_window``, ``percentiles``, ``transport_modes``,
             ``access_modes``, ``egress_modes``, ``max_time``, ``max_time_walking``,
             ``max_time_cycling``, ``max_time_driving``, ``speed_cycling``, ``speed_walking``,
-            ``max_public_transport_rides``, ``max_bicycle_traffic_stress``
+            ``max_public_transport_rides``, ``max_bicycle_traffic_stress``,
+            ``include_wait_time``
         """
         if not isinstance(transport_network, TransportNetwork):
             transport_network = TransportNetwork(*transport_network)

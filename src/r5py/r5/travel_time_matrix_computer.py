@@ -40,6 +40,24 @@ class TravelTimeMatrixComputer(BaseTravelTimeMatrixComputer):
         self._prepare_origins_destinations()
         self.request.destinations = self.destinations
 
+        # if we should include waiting time in the reported travel time,
+        # we need to request a more detailed breakdown from R5
+        if self.request.include_wait_time and self.request.has_transit_modes:
+            self.request._regional_task.includePathResults = True
+
+            # R5 has a maximum number of destinations for which it returns
+            # detailed information, and it’s set to 5000 by default (R5
+            # themselves use an HTTP API and want to limit per-request payload).
+            # The value is a static property of com.conveyal.r5.analyst.cluster.PathResult;
+            # static properites of Java classes can be modified in a singleton kind of way
+            try:
+                com.conveyal.r5.analyst.cluster.PathResult.maxDestinations = max(
+                    com.conveyal.r5.analyst.cluster.PathResult.maxDestinations,
+                    len(self.destinations) + 1,
+                )
+            except AttributeError:
+                pass
+
         # loop over all origins, modify the request, and compute the times
         # to all destinations.
         with joblib.Parallel(
@@ -104,6 +122,10 @@ class TravelTimeMatrixComputer(BaseTravelTimeMatrixComputer):
         od_matrix["to_id"] = self.destinations.id
         od_matrix["from_id"] = from_id
 
+        if self.request.include_wait_time and self.request.has_transit_modes:
+            travel_times = self._parse_total_times(from_id, results)
+            for percentile in travel_times:
+                od_matrix[f"travel_time_p{percentile:d}"] = travel_times[percentile]
         for p, percentile in enumerate(self.request.percentiles):
             travel_times = results.travelTimes.getValues()[p]
             od_matrix[f"travel_time_p{percentile:d}"] = travel_times
@@ -120,6 +142,34 @@ class TravelTimeMatrixComputer(BaseTravelTimeMatrixComputer):
 
         return od_matrix
 
+    def _parse_total_times(self, from_id, results):
+        """
+        Parse the detailed paths returned by an R5 TravelTimeMatrix.
+
+        Arguments
+        ---------
+        from_id : mixed
+            The value of the ID column of the origin record to report on.
+        results : `com.conveyal.r5.OneOriginResult` (Java object)
+
+        Returns
+        -------
+        travel_times : dict[int, list[int]]
+            Lists of travel times (including waiting time), by percentiles
+        """
+        travel_times = {
+            percentile: [
+                float(pandas.Series([
+                    iteration.totalTime
+                    for iteration in iterations_per_destination.values()
+                ]).quantile([percentile / 100.0]))
+                for iterations_per_destination in results.paths.iterationsForPathTemplates
+            ]
+            for percentile in self.request.percentiles
+        }
+        print(".", end="")
+        return travel_times
+
     def _travel_times_per_origin(self, from_id):
         request = copy.copy(self.request)
         request.origin = self.origins[self.origins.id == from_id].geometry.item()
@@ -130,5 +180,10 @@ class TravelTimeMatrixComputer(BaseTravelTimeMatrixComputer):
         results = travel_time_computer.computeTravelTimes()
 
         od_matrix = self._parse_results(from_id, results)
+
+        #DEBUG statement
+        if self.request.has_transit_modes:
+            #self.path_iterations = results.paths.getPathIterationsForDestination()
+            self.paths = results.paths
 
         return od_matrix
