@@ -529,6 +529,9 @@ class TestDetailedItinerariesComputer:
             transport_network,
             origins=origins,
             departure=departure_datetime,
+            departure_time_window=datetime.timedelta(
+                hours=1
+            ),  # using old default for simplicity
             transport_modes=[transport_mode],
         )
         if transport_mode == r5py.TransportMode.TRANSIT:
