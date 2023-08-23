@@ -159,10 +159,14 @@ class TravelTimeMatrixComputer(BaseTravelTimeMatrixComputer):
         """
         travel_times = {
             percentile: [
-                float(pandas.Series([
-                    iteration.totalTime
-                    for iteration in iterations_per_destination.values()
-                ]).quantile([percentile / 100.0]))
+                float(
+                    pandas.Series(
+                        [
+                            iteration.totalTime
+                            for iteration in iterations_per_destination.values()
+                        ]
+                    ).quantile([percentile / 100.0])
+                )
                 for iterations_per_destination in results.paths.iterationsForPathTemplates
             ]
             for percentile in self.request.percentiles
@@ -181,9 +185,9 @@ class TravelTimeMatrixComputer(BaseTravelTimeMatrixComputer):
 
         od_matrix = self._parse_results(from_id, results)
 
-        #DEBUG statement
+        # DEBUG statement
         if self.request.has_transit_modes:
-            #self.path_iterations = results.paths.getPathIterationsForDestination()
+            # self.path_iterations = results.paths.getPathIterationsForDestination()
             self.paths = results.paths
 
         return od_matrix

@@ -305,24 +305,12 @@ class RegionalTask:
     @property
     def has_direct_modes(self):
         """Determine if any of the `transport_modes` are direct modes."""
-        return bool(
-            [
-                mode
-                for mode in self.transport_modes
-                if mode.is_street_mode
-            ]
-        )
+        return bool([mode for mode in self.transport_modes if mode.is_street_mode])
 
     @property
     def has_transit_modes(self):
         """Determine if any of the `transport_modes` are by public transport."""
-        return bool(
-            [
-                mode
-                for mode in self.transport_modes
-                if mode.is_transit_mode
-            ]
-        )
+        return bool([mode for mode in self.transport_modes if mode.is_transit_mode])
 
     @property
     def max_bicycle_traffic_stress(self):
