@@ -2,10 +2,9 @@
 
 """Python wrapper for the R5 routing analysis engine."""
 
-__version__ = "0.0.4"
+__version__ = "0.1.0"
 
 from .r5 import (
-    BreakdownStat,
     DetailedItinerariesComputer,
     RegionalTask,
     TransportMode,
@@ -14,7 +13,6 @@ from .r5 import (
 )
 
 __all__ = [
-    "BreakdownStat",
     "DetailedItinerariesComputer",
     "RegionalTask",
     "TransportMode",

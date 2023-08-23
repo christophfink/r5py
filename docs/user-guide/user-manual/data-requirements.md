@@ -10,11 +10,12 @@ datasets:
 ::::{grid-item-card}
 a **road network** dataset from [OpenStreetMap
 (OSM)](https://wiki.openstreetmap.org/wiki/Data) in [*Protocol Buffer Binary*
-(`.pbf`)](https://wiki.openstreetmap.org/wiki/PBF_Format) format:
+(`.pbf`)](https://wiki.openstreetmap.org/wiki/PBF_Format) format (mandatory):
 
 These data are used for finding the fastest routes and calculating the travel
-times for walking, cycling and driving. In addition, these data are used
-for walking/cycling legs between stops when routing with public transport.
+times for walking, cycling and driving. In addition, these data are used for
+walking/cycling legs to, from, or between stops when routing with public
+transport.
 ::::
 
 ::::{grid-item-card}
@@ -29,6 +30,8 @@ trams, trains, and other vehicles.
 ::::{grid-item}
 :columns: 12
 
+(data-preprocessing)=
+
 :::{admonition} Data pre-processing
 :class: hint
 
@@ -40,10 +43,10 @@ use the tools in [this
 repository](https://github.com/RSGInc/ladot_analysis_dataprep) to add
 customised costs for pedestrian and cycling analyses.
 
-*R5py* can *combine multiple GTFS data sets*. This is useful when you study
+*R5py* automatically *combines multiple GTFS data sets*. This is useful when you study
 areas covered by more than one transit authority, or when data from different
 modes of transport, such as bus and metro, are available in separate GTFS
-feeds, only.
+feeds.
 :::
 ::::
 
@@ -91,8 +94,10 @@ you are aware of.
     built, set to replace Transitfeeds (see below)
   - [Transitfeeds](https://transitfeeds.com/) is an easy to navigate website
     that hosts up-to-date and historical GTFS data for many countries and
-    cities. *Deprecated: will be replaced by* Mobility Database.
+    cities. *Deprecated: will be replaced by Mobility Database*.
 
+
+(check-gtfs-files)=
 
 :::{admonition} Check GTFS files
 :class: tip
@@ -104,7 +109,9 @@ geographic extent of a study area.
 *MobilityData*’s [GTFS
 Validator](https://github.com/MobilityData/gtfs-validator) is a cross-platform
 Java tool to check file integrity, data types, and compliance with the GTFS
-standard.
+standard. They also provide an [online
+version](https://gtfs-validator.mobilitydata.org/) where you can upload a feed
+to check against the reference and best practices.
 
 [*GTFS-Lite*](https://gtfs-lite.readthedocs.io/) is a Python package to read
 GTFS data sets into {class}`gtfslite.gtfs.GTFS` objects that store the
@@ -136,20 +143,31 @@ to convert them into a {class}`geopandas.GeoDataFrame`.
 
 ## Sample datasets
 
-In this documentation, we use some open data sets, that you can also find in the
+In this documentation, we use some sample data sets that you can also find in the
 [source code
 repository](https://github.com/r5py/r5py/tree/main/docs/_static/data/). In
 particular, the sample data comprises of the following data sets:
 
-- A population grid data set of Helsinki city centre, obtained from the
-  [Helsinki Region Environmental
-  Services](https://www.hsy.fi/en/environmental-information/open-data/avoin-data---sivut/population-grid-of-helsinki-metropolitan-area/)
-  (HSY), licensed under a Creative Commons By Attribution 4.0.
-
-- An OpenStreetMap extract covering Helsinki (© OpenStreetMap contributors,
-  [ODbL license](https://www.openstreetmap.org/copyright))
-
-- A GTFS public transport schedule dataset for Helsinki, cropped and minimised
-  from the official open-data download from *Helsingin seudun liikenne*’s (HSL)
-  [open data web page](https://github.com/r5py/r5py/tree/main/docs/_static/data/),
-  licensed under a Creative Commons By Attribution 4.0.
+- Helsinki, Finland
+  - A population grid data set of Helsinki city centre, obtained from the
+    [Helsinki Region Environmental
+    Services](https://www.hsy.fi/en/environmental-information/open-data/avoin-data---sivut/population-grid-of-helsinki-metropolitan-area/)
+    (HSY), licensed under a Creative Commons By Attribution 4.0.
+  
+  - An OpenStreetMap extract covering Helsinki (© OpenStreetMap contributors,
+    [ODbL license](https://www.openstreetmap.org/copyright))
+  
+  - A GTFS public transport schedule dataset for Helsinki, cropped and minimised
+    from the official open-data download from *Helsingin seudun liikenne*’s (HSL)
+    [open data web page](https://github.com/r5py/r5py/tree/main/docs/_static/data/),
+    licensed under a Creative Commons By Attribution 4.0.
+    
+- São Paulo, Brazil
+  - A population grid data set of São Paulo city centre, obtained from the
+    [Access to Opportunities Project](https://www.ipea.gov.br/acessooportunidades/en/) conducted at the Institute for Applied Economic Research - Ipea, Brazil.
+  
+  - An OpenStreetMap extract covering São Paulo city centre.
+  
+  - A GTFS public transport schedule dataset for São Paulo, cropped and minimised
+    from the official open-data download from *SPTRANS*’s
+    [open data web page](https://www.sptrans.com.br/desenvolvedores/).
