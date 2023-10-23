@@ -6,6 +6,7 @@ import math
 import multiprocessing
 import warnings
 
+import geopandas
 import numpy
 import shapely
 
@@ -14,7 +15,7 @@ from .regional_task import RegionalTask
 from .transport_network import TransportNetwork
 
 
-__all__ = ["BaseTravelTimeMatrixComputer"]
+__all__ = ["BaseTravelTimeMatrix"]
 
 
 # R5 fills cut-off (NULL) values with MAX_INT32
@@ -26,7 +27,7 @@ MAX_INT32 = (2**31) - 1
 NUM_THREADS = math.ceil(multiprocessing.cpu_count() * 0.5)
 
 
-class BaseTravelTimeMatrixComputer:
+class BaseTravelTimeMatrix(geopandas.GeoDataFrame):
     """Base class for travel time computers between many origins and destinations."""
 
     MAX_INT32 = MAX_INT32
@@ -89,6 +90,8 @@ class BaseTravelTimeMatrixComputer:
 
         self.verbose = Config().arguments.verbose
 
+        geopandas.GeoDataFrame.__init__(self, self.compute_travel_times())
+
     @property
     def destinations(self):
         return self._destinations
@@ -99,6 +102,14 @@ class BaseTravelTimeMatrixComputer:
             check_od_data_set(destinations)
             self._destinations_crs = destinations.crs
             self._destinations = destinations.to_crs("EPSG:4326").copy()
+
+    @property
+    def _constructor(self):
+        # cf https://pandas.pydata.org/pandas-docs/stable/development/
+        #   extending.html#override-constructor-properties
+        return self.__class__
+
+    # TODO: expire cached results when parameters are changed
 
     def _fill_nulls(self, data_set):
         """
@@ -118,6 +129,11 @@ class BaseTravelTimeMatrixComputer:
             Data frame in which all MAX_INT32 have been replaced by `numpy.nan`.
         """
         return data_set.applymap(lambda x: numpy.nan if x == MAX_INT32 else x)
+
+    @property
+    def _mgr(self):
+        print("now accessing _mgr")
+        return super()._mgr
 
     def _prepare_origins_destinations(self):
         """

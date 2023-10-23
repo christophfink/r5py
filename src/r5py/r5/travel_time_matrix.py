@@ -7,19 +7,19 @@ import copy
 import joblib
 import pandas
 
-from .base_travel_time_matrix_computer import BaseTravelTimeMatrixComputer
+from .base_travel_time_matrix import BaseTravelTimeMatrix
 from ..util import start_jvm
 
 import com.conveyal.r5
 
 
-__all__ = ["TravelTimeMatrixComputer"]
+__all__ = ["TravelTimeMatrix"]
 
 
 start_jvm()
 
 
-class TravelTimeMatrixComputer(BaseTravelTimeMatrixComputer):
+class TravelTimeMatrix(BaseTravelTimeMatrix):
     """Compute travel times between many origins and destinations."""
 
     def compute_travel_times(self):
