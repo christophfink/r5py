@@ -71,7 +71,15 @@ class TransportNetwork:
             transport_network.scenarioId = PACKAGE
 
             osm_mapdb = Config().CACHE_DIR / f"{digest}.mapdb"
-            osm_file = com.conveyal.osmlib.OSM(f"{osm_mapdb}")
+            try:
+                osm_file = com.conveyal.osmlib.OSM(f"{osm_mapdb}")
+            except java.io.IOError:
+                try:
+                    osm_mapdb.unlink()
+                except FileNotFoundError:
+                    pass
+                osm_file = com.conveyal.osmlib.OSM(f"{osm_mapdb}")
+
             osm_file.intersectionDetection = True
             osm_file.readFromFile(f"{osm_pbf}")
 
